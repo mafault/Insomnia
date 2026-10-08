@@ -1,0 +1,1562 @@
+local MarketPlaceService = 					game:GetService('MarketplaceService')
+	local CollectionService = 					game:GetService('CollectionService')
+	local ReplicatedStorage = 					game:GetService('ReplicatedStorage')
+	local UserInputService = 					game:GetService('UserInputService')
+	local ReplicatedFirst = 					game:GetService('ReplicatedFirst')
+	local TeleportService = 					game:GetService('TeleportService')
+	local TextChatService = 					game:GetService('TextChatService')
+	local TweenService = 						game:GetService('TweenService')
+	local SoundService = 						game:GetService('SoundService')
+	local HttpService = 						game:GetService('HttpService')
+	local StarterGui = 							game:GetService('StarterGui')
+	local RunService = 							game:GetService('RunService')
+	local Lighting = 							game:GetService('Lighting')
+	local Players = 							game:GetService('Players')
+	local Debris = 								game:GetService('Debris')
+
+	local Library = {}
+
+	Library.sections = {}
+	Library.elements = {}
+	Library.functions = {}
+	Library.binds = {}
+
+	Library.Font = 'Inconsolata'
+
+	local Binds = {
+		--['A'] = 'A',
+		['B'] = 'B',
+		['C'] = 'C',
+		--['D'] = 'D',
+		['E'] = 'E',
+		['F'] = 'F',
+		['G'] = 'G',
+		['H'] = 'H',
+		['I'] = 'I',
+		['J'] = 'J',
+		['K'] = 'K',
+		['L'] = 'L',
+		['M'] = 'M',
+		['N'] = 'N',
+		['O'] = 'O',
+		['P'] = 'P',
+		['Q'] = 'Q',
+		['R'] = 'R',
+		--['S'] = 'S',
+		['T'] = 'T',
+		['U'] = 'U',
+		['V'] = 'V',
+		--['W'] = 'W',
+		['X'] = 'X',
+		['Y'] = 'Y',
+		['Z'] = 'Z',
+		['Zero'] = '0',
+		['One'] = '1',
+		['Two'] = '2',
+		['Three'] = '3',
+		['Four'] = '4',
+		['Five'] = '5',
+		['Six'] = '6',
+		['Seven'] = '7',
+		['Eight'] = '8',
+		['Nine'] = '9',
+		['LeftShift'] = 'LSHIFT',
+		['RightShift'] = 'RSHIFT',
+		['LeftControl'] = 'LCTRL',
+		['RightControl'] = 'RCTRL',
+		['LeftAlt'] = 'LALT',
+		['RightAlt'] = 'RALT',
+		['Insert'] = 'INS',
+		['Delete'] = 'DEL',
+		['Home'] = 'HOME',
+		['End'] = 'END',
+		['PageUp'] = 'PGUP',
+		['PageDown'] = 'PGDOWN',
+		['Backspace'] = 'BACKSPACE',
+		['Return'] = 'RETURN',
+		['Tab'] = 'TAB',
+		['Space'] = 'SPACE',
+		['LeftBracket'] = '[',
+		['RightBracket'] = ']',
+		['Semicolon'] = ';',
+		['Apostrophe'] = "'",
+		['Comma'] = ',',
+		['Period'] = '.',
+		['Slash'] = '/',
+		['Minus'] = '-',
+		['Equals'] = '=',
+		['BackSlash'] = '\\',
+		['Up'] = 'UP',
+		['Down'] = 'DOWN',
+		['Left'] = 'LEFT',
+		['Right'] = 'RIGHT',
+		['F1'] = 'F1',
+		['F2'] = 'F2',
+		['F3'] = 'F3',
+		['F4'] = 'F4',
+		['F5'] = 'F5',
+		['F6'] = 'F6',
+		['F7'] = 'F7',
+		['F9'] = 'F9',
+		['F10'] = 'F10',
+		['F11'] = 'F11',
+		['F12'] = 'F12',
+	}
+
+	local function isMouseInFrame(frame)
+		local mousePos = UserInputService:GetMouseLocation() - Vector2.new(0, game:GetService("GuiService"):GetGuiInset().Y)
+		local framePos = frame.AbsolutePosition
+		local frameSize = frame.AbsoluteSize
+
+		local insideX = mousePos.X >= framePos.X and mousePos.X <= (framePos.X + frameSize.X)
+		local insideY = mousePos.Y >= framePos.Y and mousePos.Y <= (framePos.Y + frameSize.Y)
+
+		return (insideX and insideY)
+	end
+
+	local function GetBindableInfo(bind)
+
+		for i, v in Binds do
+			if i == bind.Name then
+				return v
+			end
+		end
+	end
+
+	function Library:Execute(data)
+		data = data or {}
+
+		if not data.Destination then
+			data.Destination = game.Players.LocalPlayer.PlayerGui
+		end
+
+		local Overlay = Instance.new('ScreenGui', data.Destination)
+		Overlay.Enabled = true
+		Overlay.IgnoreGuiInset = true
+		Overlay.DisplayOrder = 185923847
+		Overlay.ResetOnSpawn = false
+		Library.gui = Overlay
+
+		local Graphic = Instance.new('Frame', Overlay)
+		Graphic.BackgroundTransparency = 1
+		Graphic.Size = UDim2.new(1, 0, 1, 0)
+
+		-- Initiliazing main window
+		local Window = Instance.new('Frame', Graphic)
+		Window.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+		Window.BackgroundTransparency = 0
+		Window.BorderSizePixel = 0
+		Window.Position = UDim2.new(0, Overlay.AbsoluteSize.X / 2, 0, Overlay.AbsoluteSize.Y / 2)
+		Window.Size = UDim2.new(0, 514, 0, 256)
+
+		local Transfer = Instance.new('ImageButton', Window)
+		Transfer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		Transfer.BackgroundTransparency = 0
+		Transfer.BorderSizePixel = 0
+		Transfer.Size = UDim2.new(1, 0, 0, 10)
+		Transfer.Position = UDim2.new(0, 0, 1, 0)
+		Transfer.ImageTransparency = 1
+		Transfer.AutoButtonColor = false
+
+		local UIStroke = Instance.new('UIStroke', Window)
+		UIStroke.BorderOffset = UDim.new(0, -1)
+		UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+		UIStroke.Color = Color3.fromRGB(35, 35, 35)
+
+		-- Initiliazing statical interface & elements
+
+		local Interface = Instance.new('Frame', Window)
+		Interface.BackgroundTransparency = 1
+		Interface.Size = UDim2.new(1, 0, 1, 0)
+		Interface.ClipsDescendants = true
+
+		local UIPadding = Instance.new('UIPadding', Interface)
+		UIPadding.PaddingBottom = UDim.new(0, 2)
+		UIPadding.PaddingLeft = UDim.new(0, 4)
+		UIPadding.PaddingRight = UDim.new(0, 4)
+		UIPadding.PaddingTop = UDim.new(0, 4)
+
+		-- Now adding dynamical elements
+
+		local ContentButtons = Instance.new('ScrollingFrame', Interface)
+		ContentButtons.BackgroundTransparency = 1
+		ContentButtons.Size = UDim2.new(1, 0, 0, 24)
+		ContentButtons.AutomaticCanvasSize = Enum.AutomaticSize.X
+		ContentButtons.CanvasSize = UDim2.new(0, 0, 0, 0)
+		ContentButtons.ScrollBarThickness = 0
+		ContentButtons.ScrollingDirection = Enum.ScrollingDirection.X
+		ContentButtons.ScrollingEnabled = true
+
+		local ButtonContainer = Instance.new('Frame', ContentButtons)
+		ButtonContainer.AutomaticSize = Enum.AutomaticSize.X
+		ButtonContainer.BackgroundTransparency = 1
+		ButtonContainer.Size = UDim2.new(1, 0, 1, 0)
+
+		local UIListLayout = Instance.new('UIListLayout', ButtonContainer)
+		UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+		UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+		UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+		local UIPadding = Instance.new('UIPadding', ButtonContainer)
+		UIPadding.PaddingBottom = UDim.new(0, 0)
+		UIPadding.PaddingLeft = UDim.new(0, 1)
+		UIPadding.PaddingRight = UDim.new(0, 0)
+		UIPadding.PaddingTop = UDim.new(0, 0)
+		--added to fix roblox's offset decemals.. (impossible to intergrate through udim. :/ )
+
+		local GhostSelector = Instance.new('Frame', ContentButtons)
+		GhostSelector.AnchorPoint = Vector2.new(0, 1)
+		GhostSelector.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+		GhostSelector.BackgroundTransparency = 1
+		GhostSelector.BorderSizePixel = 0
+		GhostSelector.Position = UDim2.new(0, 0, 1, 0)
+		GhostSelector.Size = UDim2.new(0, 101, 0, 1)
+
+		local ContainerSelector = Instance.new('Frame', ContentButtons)
+		ContainerSelector.AnchorPoint = Vector2.new(0, 1)
+		ContainerSelector.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ContainerSelector.BackgroundTransparency = 1
+		ContainerSelector.BorderSizePixel = 0
+		ContainerSelector.Position = UDim2.new(0, 0, 1, 0)
+		ContainerSelector.Size = UDim2.new(0, 101, 0, 1)
+
+		--ended initialization of main window. --//changed to colorbox window.. ///////Now its user-interact time
+
+		task.spawn(function()
+			local Holding1 = false
+
+			local dragStartPos -- = i.Position
+			local guiStartPos --= Window.Position
+
+			local function updateUiPosition(input)
+				local delta = UserInputService:GetMouseLocation() - Vector2.new(0, game:GetService("GuiService"):GetGuiInset().Y) - dragStartPos
+
+				TweenService:Create(Window, TweenInfo.new(0.1), {Position = UDim2.new(
+					guiStartPos.X.Scale, 
+					guiStartPos.X.Offset + delta.X, 
+					guiStartPos.Y.Scale, 
+					guiStartPos.Y.Offset + delta.Y
+					)}):Play()
+			end
+
+			Transfer.MouseButton1Down:Connect(function()
+				Holding1 = true
+
+				dragStartPos = UserInputService:GetMouseLocation() - Vector2.new(0, game:GetService("GuiService"):GetGuiInset().Y)
+				guiStartPos = Window.Position
+
+				local connection
+				connection = UserInputService.InputChanged:Connect(function(changedInput)
+					if changedInput.UserInputType == Enum.UserInputType.MouseMovement then
+						if Holding1 then
+							updateUiPosition(changedInput)
+						else
+							connection:Disconnect()
+						end
+					end
+				end)
+			end)
+
+			UserInputService.InputEnded:Connect(function(i, g)
+				if i.UserInputType == Enum.UserInputType.MouseButton1 then
+					Holding1 = false
+				end
+			end)
+		end)
+
+		local LastGhostSelectorIndex = nil
+		local LastSectionSelectedIndex = nil
+
+		function Library:CallWindow(name, callback, propertydata)
+
+			if name == 'ColorBox' then
+
+				Interface.Interactable = false
+				Interface.Visible = false
+
+				local ColorBoxInterface = Instance.new('Frame', Window)
+				ColorBoxInterface.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+				ColorBoxInterface.BackgroundTransparency = 0.25
+				ColorBoxInterface.BorderSizePixel = 0
+				ColorBoxInterface.Size = UDim2.new(1, 0, 1, 0)
+
+				local ColorBoxButtons = Instance.new('Frame', ColorBoxInterface)
+				ColorBoxButtons.AnchorPoint = Vector2.new(0.5, 1)
+				ColorBoxButtons.AutomaticSize = Enum.AutomaticSize.XY
+				ColorBoxButtons.BackgroundTransparency = 1
+				ColorBoxButtons.Position = UDim2.new(0.5, 0, 1, -8)
+
+				local UIListLayout = Instance.new('UIListLayout', ColorBoxButtons)
+				UIListLayout.Padding = UDim.new(0, 8)
+				UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+				local AcceptButton = Instance.new('TextButton', ColorBoxButtons)
+				AcceptButton.BackgroundTransparency = 1
+				AcceptButton.Size = UDim2.new(0, 200, 0, 20)
+				AcceptButton.Text = 'Apply'
+				AcceptButton.TextColor3 = Color3.fromRGB(225, 225, 225)
+				AcceptButton.TextSize = 13
+				AcceptButton.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+				local CancelButton = AcceptButton:Clone()
+				CancelButton.Parent = ColorBoxButtons
+				CancelButton.Text = 'Cancel'
+
+				local InfoFrame = Instance.new('Frame', ColorBoxInterface)
+				InfoFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+				InfoFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+				InfoFrame.BackgroundTransparency = 0.9
+				InfoFrame.Position = UDim2.new(0.7, 0, 0.5, 0)
+				InfoFrame.Size = UDim2.new(0, 150, 0, 150)
+
+				local UIPadding = Instance.new('UIPadding', InfoFrame)
+				UIPadding.PaddingBottom = UDim.new(0, 3)
+				UIPadding.PaddingLeft = UDim.new(0, 3)
+				UIPadding.PaddingRight = UDim.new(0, 3)
+				UIPadding.PaddingTop = UDim.new(0, 3)
+
+				local TextFolder = Instance.new('Folder', InfoFrame)
+
+				local UIListLayout = Instance.new('UIListLayout', TextFolder)
+				UIListLayout.FillDirection = Enum.FillDirection.Vertical
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+				local RGB_Label = Instance.new('TextLabel', TextFolder)
+				RGB_Label.AnchorPoint = Vector2.new(0.5, 0)
+				RGB_Label.AutomaticSize = Enum.AutomaticSize.Y
+				RGB_Label.BackgroundTransparency = 1
+				RGB_Label.Size = UDim2.new(1, 0, 0, 0)
+				RGB_Label.Text = 'RGB: [0, 0, 0]'
+				RGB_Label.TextColor3 = Color3.fromRGB(225, 225, 225)
+				RGB_Label.TextSize = 13
+				RGB_Label.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+				RGB_Label.TextXAlignment = Enum.TextXAlignment.Left
+
+				local HSV_Label = RGB_Label:Clone()
+				HSV_Label.Parent = TextFolder
+
+				local HEX_Label = HSV_Label:Clone()
+				HEX_Label.Parent = TextFolder
+
+				local AlphaSlider = Instance.new('ImageButton', InfoFrame)
+				AlphaSlider.AnchorPoint = Vector2.new(0, 1)
+				AlphaSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				AlphaSlider.BackgroundTransparency = 0
+				AlphaSlider.BorderSizePixel = 0
+				AlphaSlider.Position = UDim2.new(0, 0, 1, -14)
+				AlphaSlider.Size = UDim2.new(1, 0, 0, 10)
+				AlphaSlider.ImageTransparency = 1
+				AlphaSlider.AutoButtonColor = false
+
+				local AlphaGradient = Instance.new('UIGradient', AlphaSlider)
+				AlphaGradient.Color = ColorSequence.new(Color3.fromRGB(15, 15, 15), Color3.fromRGB(255, 255, 255))
+
+				local AlphaPicker = Instance.new('ImageButton', AlphaSlider)
+				AlphaPicker.BackgroundTransparency = 1
+				AlphaPicker.Size = UDim2.new(0, 3, 1, 0)
+				AlphaPicker.Position = UDim2.new(0, AlphaSlider.AbsoluteSize.X, 0, 0)
+				AlphaPicker.ImageTransparency = 1
+
+				local ResultFrame = Instance.new('Frame', InfoFrame)
+				ResultFrame.AnchorPoint = Vector2.new(0, 1)
+				ResultFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				ResultFrame.BackgroundTransparency = 0
+				ResultFrame.BorderSizePixel = 0
+				ResultFrame.Position = UDim2.new(0, 0, 1, 0)
+				ResultFrame.Size = UDim2.new(1, 0, 0, 10)
+
+				local UIStroke = Instance.new('UIStroke', ResultFrame)
+				UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+				UIStroke.Color = Color3.fromRGB(255, 255, 255)
+				UIStroke.Transparency = 0.8
+
+				local WheelFrame = Instance.new('ImageButton', ColorBoxInterface)
+				WheelFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+				WheelFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+				WheelFrame.BackgroundTransparency = 0.9
+				WheelFrame.BorderSizePixel = 0
+				WheelFrame.Size = UDim2.new(0, 150, 0, 150)
+				WheelFrame.Position = UDim2.new(0.2, 0, 0.5, 0)
+				WheelFrame.ImageTransparency = 1
+
+				local UICorner = Instance.new('UICorner', WheelFrame)
+				UICorner.CornerRadius = UDim.new(1, 0)
+
+				local UIPadding = Instance.new('UIPadding', WheelFrame)
+				UIPadding.PaddingBottom = UDim.new(0, 3)
+				UIPadding.PaddingLeft = UDim.new(0, 3)
+				UIPadding.PaddingRight = UDim.new(0, 3)
+				UIPadding.PaddingTop = UDim.new(0, 3)
+
+				local PalleteCircle = Instance.new('ImageButton', WheelFrame)
+				PalleteCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+				PalleteCircle.BackgroundTransparency = 1
+				PalleteCircle.Size = UDim2.new(0, 144, 0, 144)
+				PalleteCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+				PalleteCircle.Image = 'rbxassetid://6020299385'
+				PalleteCircle.AutoButtonColor = false
+
+				local PickerFrame = Instance.new('Frame', PalleteCircle)
+				PickerFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+				PickerFrame.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+				PickerFrame.BackgroundTransparency = 0
+				PickerFrame.BorderSizePixel = 0
+				PickerFrame.Size = UDim2.new(0, 6, 0, 6)
+				PickerFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+				local UIStroke = Instance.new('UIStroke', PickerFrame)
+				UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+				UIStroke.Color = Color3.fromRGB(0, 0, 0)
+
+				local Description = Instance.new('TextLabel', ColorBoxInterface)
+				Description.AnchorPoint = Vector2.new(0.5, 0)
+				Description.AutomaticSize = Enum.AutomaticSize.Y
+				Description.BackgroundTransparency = 1
+				Description.Size = UDim2.new(1, 0, 0, 0)
+				Description.Position = UDim2.new(0.5, 0, 0, 8)
+				Description.Text = propertydata and 'Editing: "'..propertydata or '" element'
+				Description.TextColor3 = Color3.fromRGB(225, 225, 225)
+				Description.TextSize = 13
+				Description.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+				--
+				local Actives = {}
+
+				local Pressing1 = false
+				local Sliding1  = false
+
+				local Color
+
+				local function Update(x)
+
+					local ScreenCenter = Vector2.new(
+						PickerFrame.AbsolutePosition.X + (PickerFrame.AbsoluteSize.X/2),
+						PickerFrame.AbsolutePosition.Y + (PickerFrame.AbsoluteSize.Y/2)
+					)
+
+					local h = (math.pi - math.atan2(ScreenCenter.Y - x.Y, ScreenCenter.X - x.X)) / (math.pi * 2)
+					local s = (x - ScreenCenter).Magnitude / (PalleteCircle.AbsoluteSize.X/2)
+					local v = math.abs((AlphaPicker.AbsolutePosition.X - AlphaSlider.AbsolutePosition.X) / AlphaSlider.AbsoluteSize.X )
+
+					Color = Color3.fromHSV(math.clamp(h, 0, 1), math.clamp(s, 0, 1), math.clamp(v, 0, 1))
+
+					ResultFrame.BackgroundColor3 = Color
+
+					RGB_Label.Text = 'RGB: ['..math.floor(Color.R * 255)..', '..math.floor(Color.G * 255)..', '..math.floor(Color.B * 255)..']'
+					HSV_Label.Text = 'HSV: ['..('%0.2f'):format(Color.R)..', '..('%0.2f'):format(Color.G)..', '..('%0.2f'):format(Color.B)..']'
+					HEX_Label.Text = 'HEX: #'..Color:ToHex()
+				end
+
+				Actives[1] = PalleteCircle.MouseButton1Down:Connect(function()
+					Pressing1 = true
+				end)
+
+				Actives[2] = AlphaSlider.MouseButton1Down:Connect(function()
+					Sliding1 = true
+				end)
+
+				Actives[3] = UserInputService.InputEnded:Connect(function(i, g)
+					if i.UserInputType == Enum.UserInputType.MouseButton1 then
+						Sliding1 = false
+						Pressing1 = false
+					end
+				end)
+
+				Actives[4] = UserInputService.InputChanged:Connect(function(i, g)
+					if i.UserInputType == Enum.UserInputType.MouseMovement then
+
+						local mousePosition = UserInputService:GetMouseLocation() - Vector2.new(0, game:GetService("GuiService"):GetGuiInset().Y)
+						local centerOfWheel = Vector2.new(PalleteCircle.AbsolutePosition.X + (PalleteCircle.AbsoluteSize.X/2), PalleteCircle.AbsolutePosition.Y + (PalleteCircle.AbsoluteSize.Y/2))
+
+						local distanceFromWheel = (mousePosition - centerOfWheel).Magnitude
+
+						if Pressing1 then
+							PickerFrame.Position = UDim2.new(0, mousePosition.X - PalleteCircle.AbsolutePosition.X, 0, mousePosition.Y - PalleteCircle.AbsolutePosition.Y)
+
+							PickerFrame.Visible = distanceFromWheel <= PalleteCircle.AbsoluteSize.X / 2 and true or false
+						elseif Sliding1 then
+							AlphaPicker.Position = UDim2.new(0, math.clamp(mousePosition.X - AlphaSlider.AbsolutePosition.X, 0, AlphaSlider.AbsoluteSize.X), AlphaPicker.Position.Y.Scale, 0)	
+						end
+
+						Update(centerOfWheel)
+					end		
+				end)
+
+				local function Close()
+					ColorBoxInterface:Destroy()
+					for _, v in Actives do
+						v:Disconnect()
+					end
+
+					Interface.Interactable = true
+					Interface.Visible = true
+				end
+
+				Actives[5] = AcceptButton.MouseButton1Click:Connect(function()
+					if callback then
+						callback(Color)
+					end
+
+					Close()
+				end)
+
+				Actives[6] = CancelButton.MouseButton1Click:Connect(function()
+					if callback then
+						callback()
+					end
+
+					Close()
+				end)
+			elseif name == 'Dropdown' then
+
+				local DropdownHandle = Instance.new('Frame', Graphic)
+				DropdownHandle.AutomaticSize = Enum.AutomaticSize.XY
+				DropdownHandle.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+				DropdownHandle.BackgroundTransparency = 0
+				DropdownHandle.BorderSizePixel = 0
+				DropdownHandle.Size = UDim2.new(0, 101, 0, 20)
+				DropdownHandle.Position = propertydata[1] + UDim2.new(0, 0, 0, game:GetService("GuiService").TopbarInset.Min.Y + DropdownHandle.AbsoluteSize.Y)
+
+				local UIPadding = Instance.new('UIPadding', DropdownHandle)
+				UIPadding.PaddingBottom = UDim.new(0, 2)
+				UIPadding.PaddingLeft = UDim.new(0, 2)
+				UIPadding.PaddingRight = UDim.new(0, 2)
+				UIPadding.PaddingTop = UDim.new(0, 2)
+
+				local UIStroke = Instance.new('UIStroke', DropdownHandle)
+				UIStroke.BorderOffset = UDim.new(0, -1)
+				UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+				UIStroke.Color = Color3.fromRGB(35, 35, 35)
+
+				local Scrollable = Instance.new('ScrollingFrame', DropdownHandle)
+				Scrollable.AutomaticSize = Enum.AutomaticSize.XY
+				Scrollable.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+				Scrollable.BackgroundTransparency = 0
+				Scrollable.BorderSizePixel = 0
+				Scrollable.Size = UDim2.new(1, 0, 0, 0)
+				Scrollable.Position = UDim2.new(0, 0, 0, 20)
+				Scrollable.AutomaticCanvasSize = Enum.AutomaticSize.Y
+				Scrollable.ScrollBarThickness = 0
+				Scrollable.CanvasSize = UDim2.new(0, 0, 0, 0)
+				Scrollable.ScrollingDirection = Enum.ScrollingDirection.Y
+
+				if #propertydata[2] > 6 then
+					Scrollable.AutomaticSize = Enum.AutomaticSize.X
+					Scrollable.Size = UDim2.new(1, 0, 0, 16 * 6)
+				end
+
+
+				local UIListLayout = Instance.new('UIListLayout', Scrollable)
+				UIListLayout.FillDirection = Enum.FillDirection.Vertical
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+				local UIPadding = Instance.new('UIPadding', Scrollable)
+				UIPadding.PaddingBottom = UDim.new(0, 0)
+				UIPadding.PaddingLeft = UDim.new(0, 4)
+				UIPadding.PaddingRight = UDim.new(0, 4)
+				UIPadding.PaddingTop = UDim.new(0, 2)
+
+				local Search = Instance.new('TextBox', DropdownHandle)
+				Search.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+				Search.BackgroundTransparency = 0
+				Search.BorderSizePixel = 0
+				Search.Size = UDim2.new(1, 0, 0, 20)
+				Search.Position = UDim2.new(0, 0, 0, 0)
+				Search.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+				Search.PlaceholderText = 'Search'
+				Search.TextColor3 = Color3.fromRGB(200, 200, 200)
+				Search.TextSize = 13
+				Search.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+				Search.ClipsDescendants = true
+				Search.TextXAlignment = Enum.TextXAlignment.Left
+				Search.Text = ''
+
+				local UIPadding = Instance.new('UIPadding', Search)
+				UIPadding.PaddingBottom = UDim.new(0, 0)
+				UIPadding.PaddingLeft = UDim.new(0, 4)
+				UIPadding.PaddingRight = UDim.new(0, 0)
+				UIPadding.PaddingTop = UDim.new(0, 0)
+
+				local PressingShift = false
+				local Value = nil
+
+				local tempButtons = {}
+
+				if propertydata[4] == true then
+					Value = {}
+				end
+
+				for _, v in pairs(propertydata[2]) do
+					local Button = Instance.new('TextButton', Scrollable)
+					Button.AutomaticSize = Enum.AutomaticSize.X
+					Button.BackgroundTransparency = 1
+					Button.Size = UDim2.new(0, 0, 0, 16)
+					Button.TextColor3 = Color3.fromRGB(140, 140, 140)
+					Button.TextSize = 13
+					Button.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					Button.Text = v
+					Button.TextXAlignment = Enum.TextXAlignment.Left
+
+					table.insert(tempButtons, Button)
+
+					if (propertydata[4] == true) and table.find(propertydata[3], v) then
+						if table.find(Value, v) then
+							table.remove(Value, table.find(Value, v))
+							Button.TextColor3 = Color3.fromRGB(140, 140, 140)
+						else
+							local ind = table.find(propertydata[3], v)
+							Value[ind] = v
+
+							--table.insert(Value, v)
+							Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+						end
+
+						propertydata[5].Text = table.concat(Value, ', ')
+					else
+						if propertydata[3] == v  then
+							Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+						end
+					end
+
+					Button.MouseButton1Click:Connect(function()
+						if propertydata[4] == true then
+							if table.find(Value, v) then
+								table.remove(Value, table.find(Value, v))
+								Button.TextColor3 = Color3.fromRGB(140, 140, 140)
+							else
+								table.insert(Value, v)
+								Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+							end
+
+							propertydata[5].Text = table.concat(Value, ', ')
+						else
+							for _, v in tempButtons do
+								v.TextColor3 = Color3.fromRGB(140, 140, 140)
+							end
+
+							Value = v
+							Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+
+							propertydata[5].Text = v
+						end
+
+						if callback then
+							callback(Value)
+						end
+					end)
+				end
+
+				local Active, Active2, Active3
+
+				Active3 = Search.Changed:Connect(function(p)
+					if p == 'Text' then
+
+						if #Search.Text > 0 then
+							for _, v in tempButtons do
+								if string.sub(string.lower(v.Text), 1, #Search.Text) == string.lower(Search.Text) or Search.Text == '' then
+									v.Visible = true
+								else
+									v.Visible = false
+								end
+							end
+						else
+							for _, v in tempButtons do
+								v.Visible = true
+							end
+						end
+					end
+				end)
+
+				Active = UserInputService.InputBegan:Connect(function(i, g)
+					--if g then return end
+
+					if i.KeyCode == Enum.KeyCode.LeftShift then
+						PressingShift = true
+					elseif i.UserInputType == Enum.UserInputType.MouseButton1 then
+						if not isMouseInFrame(DropdownHandle) then
+							Active:Disconnect()
+							Active2:Disconnect()
+							Active3:Disconnect()
+
+							callback(-9999991)
+							DropdownHandle:Destroy()
+						end
+					end
+				end)
+				Active2 = UserInputService.InputEnded:Connect(function(i, g)
+					if i.KeyCode == Enum.KeyCode.LeftShift then
+						PressingShift = false
+					end
+				end)
+
+			elseif name == 'warn' then
+
+				local WarnHandle = Instance.new('Frame', Window)
+				WarnHandle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+				WarnHandle.BackgroundTransparency = 0.15
+				WarnHandle.BorderSizePixel = 0
+				WarnHandle.Size = UDim2.new(1, 0, 1, 0)
+
+				local UIListLayout = Instance.new('UIListLayout', WarnHandle)
+				UIListLayout.Padding = UDim.new(0, 10)
+				UIListLayout.FillDirection = Enum.FillDirection.Vertical
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+
+				local WarnDesc = Instance.new('TextLabel', WarnHandle)
+				WarnDesc.AnchorPoint = Vector2.new(0.5, 0.5)
+				WarnDesc.AutomaticSize = Enum.AutomaticSize.XY
+				WarnDesc.BackgroundTransparency = 1
+				WarnDesc.TextColor3 = Color3.fromRGB(255, 159, 5)
+				WarnDesc.TextSize = 28
+				WarnDesc.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Heavy, Enum.FontStyle.Normal)
+				WarnDesc.Text = 'WARNING'
+				WarnDesc.TextTransparency = 0.98
+				TweenService:Create(WarnDesc, TweenInfo.new(1), {TextTransparency = 0}):Play()
+
+				local TextDesc = Instance.new('TextLabel', WarnHandle)
+				TextDesc.AnchorPoint = Vector2.new(0.5, 0)
+				TextDesc.AutomaticSize = Enum.AutomaticSize.Y
+				TextDesc.BackgroundTransparency = 1
+				TextDesc.Size = UDim2.new(0, 400, 0, 0)
+				TextDesc.TextColor3 = Color3.fromRGB(200, 200, 200)
+				TextDesc.TextSize = 13
+				TextDesc.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+				TextDesc.Text = 'Are you sure to enable "'..propertydata[1]..'" feature? It can be dangerous and might be detected by the internal anti-cheat!'
+				TextDesc.TextWrapped = true
+
+				local Buttons = Instance.new('Frame', WarnHandle)
+				Buttons.AnchorPoint = Vector2.new(0.5, 0.5)
+				Buttons.AutomaticSize = Enum.AutomaticSize.XY
+				Buttons.BackgroundTransparency = 1
+
+				local UIListLayout = Instance.new('UIListLayout', Buttons)
+				UIListLayout.Padding = UDim.new(0, 4)
+				UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+
+				local AcceptButton = Instance.new('TextButton', Buttons)
+				AcceptButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+				AcceptButton.BackgroundTransparency = 0
+				AcceptButton.BorderSizePixel = 0
+				AcceptButton.Size = UDim2.new(0, 140, 0, 20)
+				AcceptButton.Text = "Yes, I'am sure"
+				AcceptButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+				AcceptButton.TextSize = 13
+				AcceptButton.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+				local DeclineButton = AcceptButton:Clone()
+				DeclineButton.Parent = Buttons
+				DeclineButton.Text = 'I changed my mind.'
+
+				local a,b 
+
+				local function Close()
+					a:Disconnect()
+					b:Disconnect()
+					WarnHandle:Destroy()
+					Interface.Interactable = true
+				end	
+
+				a=AcceptButton.MouseButton1Click:Connect(function()
+					if callback then
+						callback(true)
+					end
+
+					Close()
+				end)
+				b=DeclineButton.MouseButton1Click:Connect(function()
+					if callback then
+						callback()
+					end
+
+					Close()
+				end)
+			end
+
+
+		end
+
+		function Library:NewSection(title)
+
+			local SectionData = {}
+
+			local ScrollableInterface = Instance.new('ScrollingFrame', Interface)
+			ScrollableInterface.BackgroundTransparency = 1
+			ScrollableInterface.Position = UDim2.new(0, 0, 0, 26)
+			ScrollableInterface.Size = UDim2.new(1, 0, 1, -28)
+			ScrollableInterface.AutomaticCanvasSize = Enum.AutomaticSize.None --Y
+			ScrollableInterface.CanvasSize = UDim2.new(0, 0, 0, 0)
+			ScrollableInterface.ScrollBarThickness = 0
+			ScrollableInterface.ScrollingDirection = Enum.ScrollingDirection.XY --Y
+			ScrollableInterface.ScrollingEnabled = false
+			ScrollableInterface.Visible = false
+
+			local UIListLayout = Instance.new('UIListLayout', ScrollableInterface)
+			UIListLayout.Padding = UDim.new(0, 4)
+			UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+			UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+			UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+			local UIPadding = Instance.new('UIPadding', ScrollableInterface)
+			UIPadding.PaddingBottom = UDim.new(0, 1)
+			UIPadding.PaddingLeft = UDim.new(0, 1)
+			UIPadding.PaddingRight = UDim.new(0, 1)
+			UIPadding.PaddingTop = UDim.new(0, 8)
+
+			local ButtonHandle = Instance.new('Frame', ButtonContainer)
+			ButtonHandle.BackgroundTransparency = 1
+			ButtonHandle.Size = UDim2.new(0, 101, 1, 0)
+
+			local ButtonDetector = Instance.new('TextButton', ButtonHandle)
+			ButtonDetector.BackgroundTransparency = 1
+			ButtonDetector.Size = UDim2.new(1, 0, 1, 0)
+			ButtonDetector.Text = title
+			ButtonDetector.TextColor3 = Color3.fromRGB(180,180,180)
+			ButtonDetector.TextSize = 13
+			ButtonDetector.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+			SectionData.Section = ScrollableInterface
+			SectionData.Handle = ButtonHandle
+			SectionData.Title = title
+
+			local index = 0
+			for i, _ in Library.sections do index+=1 end
+			Library.sections[index] = SectionData
+
+			SectionData.Index = index
+
+			ButtonDetector.MouseEnter:Connect(function() 
+				LastGhostSelectorIndex = index 
+				TweenService:Create(GhostSelector, TweenInfo.new(0.35), {BackgroundTransparency = 0}):Play()
+				TweenService:Create(GhostSelector, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0, ButtonHandle.Size.X.Offset * index, 1, -1)}):Play()
+			end)
+
+			ButtonDetector.MouseLeave:Connect(function()
+				task.wait()
+
+				if LastGhostSelectorIndex == index then
+					TweenService:Create(GhostSelector, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+				end
+			end)
+
+			function SectionData:Switch()
+
+				if LastSectionSelectedIndex ~= index then
+					for i, v in Library.sections do
+						if i ~= title then
+							v.Section.Visible = false
+							v.Handle:FindFirstChildOfClass('TextButton').TextColor3 = Color3.fromRGB(180,180,180)
+
+							--TweenService:Create(v.Section, TweenInfo.new(0.1), {Position = UDim2.new(0, 0, 1.1, 26)}):Play()
+						end 
+					end
+				end
+
+				if LastSectionSelectedIndex ~= index then
+
+					--TweenService:Create(ScrollableInterface, TweenInfo.new(0.2), {Position = UDim2.new(0, 0, 0, 26)}):Play()
+
+					ScrollableInterface.Visible = true
+					LastSectionSelectedIndex = index
+
+					TweenService:Create(ButtonDetector, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+					TweenService:Create(ContainerSelector, TweenInfo.new(0.35), {BackgroundTransparency = 0}):Play()
+					TweenService:Create(ContainerSelector, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0, ButtonHandle.Size.X.Offset * index, 1, -1)}):Play()
+				end
+			end
+
+			ButtonDetector.MouseButton1Click:Connect(function() SectionData:Switch() end)
+
+			function SectionData:NewPage(title)
+
+				local PageData = {}
+
+				local PageHolder = Instance.new('Frame', ScrollableInterface)
+				PageHolder.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+				PageHolder.BackgroundTransparency = 0
+				PageHolder.BorderSizePixel = 0
+				PageHolder.Size = UDim2.new(0, 165, 1, 0)
+
+				local UIStroke = Instance.new('UIStroke', PageHolder)
+				UIStroke.BorderOffset = UDim.new(0, 0)
+				UIStroke.BorderStrokePosition = Enum.BorderStrokePosition.Outer
+				UIStroke.Color = Color3.fromRGB(35, 35, 35)
+
+				local ElementContainer = Instance.new('ScrollingFrame', PageHolder)
+				ElementContainer.BackgroundTransparency = 1
+				ElementContainer.Position = UDim2.new(0, 2, 0, 6)
+				ElementContainer.Size = UDim2.new(1, -4, 1, -8)
+				ElementContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
+				ElementContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+				ElementContainer.ScrollBarThickness = 0
+				ElementContainer.ScrollingDirection = Enum.ScrollingDirection.XY --Y
+				ElementContainer.ScrollingEnabled = true
+
+				local UIListLayout = Instance.new('UIListLayout', ElementContainer)
+				UIListLayout.FillDirection = Enum.FillDirection.Vertical
+				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+				UIListLayout.HorizontalFlex = Enum.UIFlexAlignment.None
+				UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+				local PageTitle = Instance.new('TextLabel', PageHolder)
+				PageTitle.AnchorPoint = Vector2.new(0, 1)
+				PageTitle.AutomaticSize = Enum.AutomaticSize.X
+				PageTitle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+				PageTitle.BackgroundTransparency = 0
+				PageTitle.BorderSizePixel = 0
+				PageTitle.Position = UDim2.new(0, 8, 0, 0)
+				PageTitle.Size = UDim2.new(0, 0, 0, 1)
+				PageTitle.Text = title
+				PageTitle.TextColor3 = Color3.fromRGB(160, 160, 160)
+				PageTitle.TextSize = 13
+				PageTitle.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+				PageTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+				local UIPadding = Instance.new('UIPadding', PageTitle)
+				UIPadding.PaddingBottom = UDim.new(0, 0)
+				UIPadding.PaddingLeft = UDim.new(0, 4)
+				UIPadding.PaddingRight = UDim.new(0, 4)
+				UIPadding.PaddingTop = UDim.new(0, 0)
+
+				PageData.Instance = PageHolder
+
+				function PageData:NewLabel(title)
+
+					local ElementData = {}
+
+					local LabelContainer = Instance.new('Frame', ElementContainer)
+					LabelContainer.BackgroundTransparency = 1
+					LabelContainer.Size = UDim2.new(1, 0, 0, 16)
+
+					local LabelLineSeparator = Instance.new('Frame', LabelContainer)
+					LabelLineSeparator.AnchorPoint = Vector2.new(0, 0.5)
+					LabelLineSeparator.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+					LabelLineSeparator.BackgroundTransparency = 0
+					LabelLineSeparator.BorderSizePixel = 0
+					LabelLineSeparator.Position = UDim2.new(0, 0, 0.5, 0)
+					LabelLineSeparator.Size = UDim2.new(1, 0, 0, 1)
+
+					local LabelTitle = Instance.new('TextLabel', LabelContainer)
+					LabelTitle.AnchorPoint = Vector2.new(0.5, 0.5)
+					LabelTitle.AutomaticSize = Enum.AutomaticSize.X
+					LabelTitle.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+					LabelTitle.BackgroundTransparency = 0
+					LabelTitle.BorderSizePixel = 0
+					LabelTitle.Position = UDim2.new(0.5, 0, 0.5, 0)
+					LabelTitle.Size = UDim2.new(0, 0, 0, 1)
+					LabelTitle.Text = title
+					LabelTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+					LabelTitle.TextSize = 13
+					LabelTitle.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					LabelTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+					local UIPadding = Instance.new('UIPadding', LabelTitle)
+					UIPadding.PaddingBottom = UDim.new(0, 0)
+					UIPadding.PaddingLeft = UDim.new(0, 8)
+					UIPadding.PaddingRight = UDim.new(0, 8)
+					UIPadding.PaddingTop = UDim.new(0, 0)
+
+					ElementData.Index = math.random(1000, 9999)
+					ElementData.Instance = LabelTitle
+
+					function ElementData.Update(txt) --local fdata={...}
+						LabelTitle.Text = txt
+					end
+
+					return ElementData
+				end
+
+				function PageData:NewButton(title, callback)
+
+					local ElementData = {}
+
+					local ButtonStatic = Instance.new('TextButton', ElementContainer)
+					ButtonStatic.BackgroundTransparency = 1
+					ButtonStatic.Size = UDim2.new(1, 0, 0, 20)
+					ButtonStatic.Text = ''
+					ButtonStatic.TextTransparency = 1
+
+					local ButtonBackground = Instance.new('Frame', ButtonStatic)
+					ButtonBackground.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+					ButtonBackground.BackgroundTransparency = 0
+					ButtonBackground.BorderSizePixel = 0
+					ButtonBackground.Position = UDim2.new(0, 4, 0, 2)
+					ButtonBackground.Size = UDim2.new(1, -8, 0, 16)
+
+					local ButtonLabel = Instance.new('TextLabel', ButtonBackground)
+					ButtonLabel.BackgroundTransparency = 1
+					ButtonLabel.Size = UDim2.new(1, 0, 1, 0)
+					ButtonLabel.Text = title
+					ButtonLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					ButtonLabel.TextSize = 13
+					ButtonLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+					local ActivateTick = tick()
+
+					ElementData.Index = math.random(1000, 9999)
+					ElementData.Instance = ButtonStatic
+
+					function ElementData.Activate()
+						if callback then
+							callback()
+						end
+					end
+
+					if callback then
+						ButtonStatic.MouseButton1Click:Connect(function()
+							if tick() - ActivateTick >= 0.1 then
+								ElementData.Activate()
+							end
+						end)
+					end
+
+					return ElementData
+				end
+
+				function PageData:NewToggle(title, default, callback, bind, color, DoWarning)
+
+					local ElementData = {}
+
+					local ToggleStatic = Instance.new('TextButton', ElementContainer)
+					ToggleStatic.BackgroundTransparency = 1
+					ToggleStatic.Size = UDim2.new(1, 0, 0, 16)
+					ToggleStatic.Text = ''
+					ToggleStatic.TextTransparency = 1
+
+					local DetectorHandle = Instance.new('TextButton', ToggleStatic)
+					DetectorHandle.BackgroundTransparency = 1
+					DetectorHandle.Size = UDim2.new(0.65, 0, 1, 0)
+					DetectorHandle.Text = ''
+					DetectorHandle.TextTransparency = 1
+
+					local Toggler = Instance.new('Frame', ToggleStatic)
+					Toggler.AnchorPoint = Vector2.new(0, 0.5)
+					Toggler.BackgroundColor3 = default and Color3.fromRGB(200, 200, 200) or Color3.fromRGB(50, 50, 50)
+					Toggler.BackgroundTransparency = 0
+					Toggler.BorderSizePixel = 0
+					Toggler.Position = UDim2.new(0, 4, 0.5, 0)
+					Toggler.Size = UDim2.new(0, 10, 0, 10)
+
+					local ToggleLabel = Instance.new('TextLabel', ToggleStatic)
+					ToggleLabel.AutomaticSize = Enum.AutomaticSize.X
+					ToggleLabel.BackgroundTransparency = 1
+					ToggleLabel.Position = UDim2.new(0, 20, 0, 0)
+					ToggleLabel.Size = UDim2.new(0, 0, 1, 0)
+					ToggleLabel.Text = title
+					ToggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					ToggleLabel.TextSize = 13
+					ToggleLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+					local IsBusy = false
+
+					function ElementData.Activate(bool)
+						if IsBusy then
+							return
+						end
+
+						IsBusy = true
+
+						if DoWarning and not ElementData.Warned then
+							Library:CallWindow('warn', function(answer)
+								IsBusy = false
+
+								if answer then
+									ElementData.Warned = true
+									ElementData.Activate(not default)
+								end
+
+							end, {title})
+
+							return
+						end
+
+						default = bool
+						Toggler.BackgroundColor3 = bool and Color3.fromRGB(200, 200, 200) or Color3.fromRGB(50, 50, 50)
+
+						IsBusy = false
+
+						if callback then
+							callback(bool)
+						end
+					end
+
+					DetectorHandle.MouseButton1Down:Connect(function()
+						ElementData.Activate(not default)
+					end)
+
+					if bind then
+
+						local BindLabel = Instance.new('TextButton', ToggleStatic)
+						BindLabel.AnchorPoint = Vector2.new(1, 0)
+						BindLabel.AutomaticSize = Enum.AutomaticSize.X
+						BindLabel.BackgroundTransparency = 1
+						BindLabel.Position = UDim2.new(1, -4, 0, 0)
+						BindLabel.Size = UDim2.new(0, 0, 1, 0)
+						BindLabel.Text = '[NONE]'
+						BindLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+						BindLabel.TextSize = 13
+						BindLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+						BindLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+						local bindname
+						local selecting = false
+
+						if typeof(bind) == 'EnumItem' then
+							bindname = GetBindableInfo(bind)
+							BindLabel.Text = '['..bindname..']'
+						end
+
+						local function dSelect()
+
+							selecting = true
+							BindLabel.Text = '[...]'
+
+							local con
+							con = UserInputService.InputBegan:Connect(function(i, g)
+								con:Disconnect()
+
+								local changed
+								local tdata = GetBindableInfo(i.KeyCode)
+
+								if tdata then
+									bind = i.KeyCode
+									bindname = tdata
+									changed = true
+									BindLabel.Text = '['..tdata..']'
+								end
+
+								if not changed then
+									bind = nil
+									bindname = nil
+									BindLabel.Text = '[NONE]'
+								end
+
+								task.wait()
+								selecting = false
+							end)
+						end
+
+						BindLabel.MouseButton1Click:Connect(function()
+							if not selecting then
+								dSelect()
+							end
+						end)
+
+						UserInputService.InputBegan:Connect(function(i, g)
+							if selecting or g or bind == nil then
+								return
+							end
+
+							if i.KeyCode == bind then
+								ElementData.Activate(not default)
+							end
+						end)
+					end
+
+					if not bind and color then
+
+						local ColorButton = Instance.new('ImageButton', ToggleStatic)
+						ColorButton.AnchorPoint = Vector2.new(1, 0.5)
+						ColorButton.BackgroundTransparency = 0
+						ColorButton.BackgroundColor3 = color
+						ColorButton.BorderSizePixel = 0
+						ColorButton.Position = UDim2.new(1, -4, 0.5, 0)
+						ColorButton.Size = UDim2.new(0, 20, 0, 10)
+						ColorButton.AutoButtonColor = false
+
+						local IsBusy = false
+
+						ColorButton.MouseButton1Click:Connect(function()
+							IsBusy = true
+
+							Library:CallWindow('ColorBox', function(x)
+								if x then
+									ElementData.Color(x)
+								end
+
+								IsBusy = false
+							end, title)
+						end)
+
+						function ElementData.Color(x)
+							ColorButton.BackgroundColor3 = x
+
+							if callback then
+								callback(x)
+							end
+						end
+					end
+
+					return ElementData
+				end
+
+				function PageData:NewTextbox(title, placeholder, callback, text, cannotedit)
+					placeholder = placeholder or '_'
+					cannotedit = cannotedit or false
+
+					local ElementData = {}
+
+					local StaticButton = Instance.new('ImageButton', ElementContainer)
+					StaticButton.BackgroundTransparency = 1
+					StaticButton.Size = UDim2.new(1, 0, 0, 36)
+					StaticButton.ImageTransparency = 1
+
+					local TextBoxElement = Instance.new('TextBox', StaticButton)
+					TextBoxElement.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+					TextBoxElement.BackgroundTransparency = 0
+					TextBoxElement.BorderSizePixel = 0
+					TextBoxElement.Size = UDim2.new(1, -8, 0, 16)
+					TextBoxElement.Position = UDim2.new(0, 4, 0.5, 0)
+					TextBoxElement.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+					TextBoxElement.TextColor3 = Color3.fromRGB(200, 200, 200)
+					TextBoxElement.TextSize = 13
+					TextBoxElement.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					TextBoxElement.TextXAlignment = Enum.TextXAlignment.Left
+					TextBoxElement.PlaceholderText = placeholder
+					TextBoxElement.ClearTextOnFocus = false
+					TextBoxElement.Text = text and text or ''
+					TextBoxElement.TextEditable = not cannotedit
+
+					local UIPadding = Instance.new('UIPadding', TextBoxElement)
+					UIPadding.PaddingBottom = UDim.new(0, 0)
+					UIPadding.PaddingLeft = UDim.new(0, 4)
+					UIPadding.PaddingRight = UDim.new(0, 0)
+					UIPadding.PaddingTop = UDim.new(0, 0)
+
+					local TextLabel = Instance.new('TextLabel', StaticButton)
+					TextLabel.BackgroundTransparency = 1
+					TextLabel.Size = UDim2.new(1, 0, 0, 16)
+					TextLabel.Position = UDim2.new(0, 4, 0, 2)
+					TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					TextLabel.TextSize = 13
+					TextLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					TextLabel.Text = title
+					TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+					function ElementData.Activate()
+						if callback then
+							callback(TextBoxElement.Text)
+						end
+					end
+
+					TextBoxElement.FocusLost:Connect(function()
+						ElementData.Activate()
+					end)
+
+					return ElementData
+				end
+
+				function PageData:NewSlider(title, default, min, max, att, callback)
+
+					local ElementData = {}
+
+					local StaticButton = Instance.new('ImageButton', ElementContainer)
+					StaticButton.BackgroundTransparency = 1
+					StaticButton.Size = UDim2.new(1, 0, 0, 24)
+					StaticButton.ImageTransparency = 1
+
+					local Bar = Instance.new('ImageButton', StaticButton)
+					Bar.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+					Bar.BackgroundTransparency = 0
+					Bar.BorderSizePixel = 0
+					Bar.Size = UDim2.new(1, -8, 0, 4)
+					Bar.Position = UDim2.new(0, 4, 0, 18)
+					Bar.AutoButtonColor = false
+
+					local Slider = Instance.new('Frame', Bar)
+					Slider.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+					Slider.BackgroundTransparency = 0
+					Slider.BorderSizePixel = 0
+					Slider.Size = UDim2.new(0, 0, 1, 0)
+
+					local TextLabel = Instance.new('TextLabel', StaticButton)
+					TextLabel.BackgroundTransparency = 1
+					TextLabel.Size = UDim2.new(1, 0, 0, 16)
+					TextLabel.Position = UDim2.new(0, 4, 0, 2)
+					TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					TextLabel.TextSize = 13
+					TextLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					TextLabel.Text = title
+					TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+					max = max or 100
+					min = min or 0
+					default = default or 0
+
+					local ValueLabel = TextLabel:Clone()
+					ValueLabel.Parent = StaticButton
+					ValueLabel.Position = UDim2.new(0, -4, 0, 2)
+					ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+					ValueLabel.Text = default
+
+					local st = default
+					local n = true
+
+					function ElementData.Activate()
+						if callback then
+							callback(default)
+						end
+					end
+
+					if n then
+						if ValueLabel.Text == '' or ValueLabel.Text == ' ' or ValueLabel.Text:find(' ') or ValueLabel.Text == nil then
+							default = tonumber(ValueLabel.Text)
+							ValueLabel.Text = st
+							local SliderDef = math.clamp(tonumber(ValueLabel.Text), min, max) or math.clamp(50, min, max)
+							local DefaultScale =  (SliderDef - min) / (max - min)
+							Slider.Size = UDim2.fromScale(DefaultScale,1)
+							--return
+						end
+						if tonumber(ValueLabel.Text) > max then
+							ValueLabel.Text = max
+							st = ValueLabel.Text
+
+							default = tonumber(ValueLabel.Text)
+							local SliderDef = math.clamp(tonumber(ValueLabel.Text), min, max) or math.clamp(50, min, max)
+							local DefaultScale =  (SliderDef - min) / (max - min)
+							Slider.Size = UDim2.fromScale(DefaultScale,1)
+							--return
+						end
+						if tonumber(ValueLabel.Text) < min then
+							ValueLabel.Text = min
+							st = ValueLabel.Text
+
+							default = tonumber(ValueLabel.Text)
+							local SliderDef = math.clamp(tonumber(ValueLabel.Text), min, max) or math.clamp(50, min, max)
+							local DefaultScale =  (SliderDef - min) / (max - min)
+							Slider.Size = UDim2.fromScale(DefaultScale,1)
+
+							--return
+						end
+						st = ValueLabel.Text
+						default = tonumber(ValueLabel.Text)
+						local SliderDef = math.clamp(tonumber(ValueLabel.Text), min, max) or math.clamp(50, min, max)
+						local DefaultScale =  (SliderDef - min) / (max - min)
+						Slider.Size = UDim2.fromScale(DefaultScale,1)
+
+					else
+						ValueLabel.Text = st 
+						default = tonumber(ValueLabel.Text)
+						local SliderDef = math.clamp(tonumber(ValueLabel.Text), min, max) or math.clamp(50, min, max)
+						local DefaultScale =  (SliderDef - min) / (max - min)
+						Slider.Size = UDim2.fromScale(DefaultScale,1)
+						return
+					end
+
+					local mouse = Players.LocalPlayer:GetMouse()
+
+					Bar.MouseButton1Down:Connect(function()
+						TweenService:Create(Slider, TweenInfo.new(0), {Size = UDim2.new(0, math.clamp(mouse.X - (Slider.AbsolutePosition.X), 0, (Bar.AbsoluteSize.X)), 1, 0)}):Play()
+
+
+						local moveconnection
+						moveconnection = mouse.Move:Connect(function()
+
+							default = ((((tonumber(max) - tonumber(min)) / (Bar.AbsoluteSize.X)) * (Slider.AbsoluteSize.X)) + tonumber(min))
+							default = (default)
+
+
+
+							TweenService:Create(Slider, TweenInfo.new(0), {Size = UDim2.new(0, math.clamp(mouse.X - (Slider.AbsolutePosition.X), 0, (Bar.AbsoluteSize.X)), 1, 0)}):Play()
+							if att == '%' then
+								ValueLabel.Text = math.floor(min + (max - min) * (default))..'%'
+							else
+								ValueLabel.Text = ('%0.2f'):format(default)
+							end
+
+							ElementData.Activate()
+						end)
+
+						local releaseconnection
+						releaseconnection = game.UserInputService.InputEnded:Connect(function(Mouse)
+							if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
+								default = ((((tonumber(max) - tonumber(min)) / (Bar.AbsoluteSize.X)) * (Slider.AbsoluteSize.X)) + tonumber(min))
+								default =(default)
+
+								TweenService:Create(Slider, TweenInfo.new(0), {Size = UDim2.new(0, math.clamp(mouse.X - (Slider.AbsolutePosition.X), 0, (Bar.AbsoluteSize.X)), 1, 0)}):Play()
+								moveconnection:Disconnect()
+								releaseconnection:Disconnect()
+							end
+						end)
+					end)
+
+					return ElementData
+				end
+
+				function PageData:NewDropdown(title, default, variants, multi, callback)
+					default = default or {}
+					variants = variants or {}
+
+					local ElementData = {}
+
+					local StaticButton = Instance.new('ImageButton', ElementContainer)
+					StaticButton.BackgroundTransparency = 1
+					StaticButton.Size = UDim2.new(1, 0, 0, 36)
+					StaticButton.ImageTransparency = 1
+
+					local ButtonBackground = Instance.new('Frame', StaticButton)
+					ButtonBackground.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+					ButtonBackground.BackgroundTransparency = 0
+					ButtonBackground.BorderSizePixel = 0
+					ButtonBackground.Position = UDim2.new(0, 4, 0.5, 0)
+					ButtonBackground.Size = UDim2.new(1, -8, 0, 16)
+
+					local TextLabel = Instance.new('TextLabel', StaticButton)
+					TextLabel.BackgroundTransparency = 1
+					TextLabel.Size = UDim2.new(1, 0, 0, 16)
+					TextLabel.Position = UDim2.new(0, 4, 0, 2)
+					TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					TextLabel.TextSize = 13
+					TextLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					TextLabel.Text = title
+					TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+					local Contain = TextLabel:Clone()
+					Contain.Parent = ButtonBackground
+					Contain.Text = default
+					Contain.Size = UDim2.new(1, 0, 1, 0)
+					Contain.Position = UDim2.new(0, 4, 0, 0)
+
+					local IconT = TextLabel:Clone()
+					IconT.AnchorPoint = Vector2.new(1, 0)
+					IconT.Parent = ButtonBackground
+					IconT.Text = '+'
+					IconT.Size = UDim2.new(0, 16, 0, 16)
+					IconT.Position = UDim2.new(1, 0, 0, 0)
+					IconT.TextXAlignment = Enum.TextXAlignment.Center
+
+					local DropdownData = default
+
+					if typeof(default) == 'string' and multi then
+						DropdownData = {default}
+					end
+
+					function ElementData.Activate()
+						if callback then
+							callback(DropdownData)
+						end
+					end
+
+					local IsBusy = false
+
+					StaticButton.MouseButton1Click:Connect(function()
+						if IsBusy then return end
+						IsBusy = true
+						StaticButton.Interactable = false
+
+						IconT.Text = '-'
+
+						Library:CallWindow('Dropdown', function(a)
+
+							if a ~= -9999991 then
+								DropdownData = a
+								ElementData.Activate()
+							else
+								IconT.Text = '+'
+								task.wait()
+								IsBusy = false
+								StaticButton.Interactable = true
+							end
+
+						end, {
+							UDim2.new(0, StaticButton.AbsolutePosition.X, 0, StaticButton.AbsolutePosition.Y + StaticButton.AbsoluteSize.Y * 2),
+							variants,
+							DropdownData,
+							multi,
+							Contain
+						})
+					end)
+
+					return ElementData
+				end
+
+				function PageData:NewColor(title, default, callback)
+
+					local ElementData = {}
+
+					local ToggleStatic = Instance.new('TextButton', ElementContainer)
+					ToggleStatic.BackgroundTransparency = 1
+					ToggleStatic.Size = UDim2.new(1, 0, 0, 16)
+					ToggleStatic.Text = ''
+					ToggleStatic.TextTransparency = 1
+
+					local DetectorHandle = Instance.new('TextButton', ToggleStatic)
+					DetectorHandle.BackgroundTransparency = 1
+					DetectorHandle.Size = UDim2.new(0.65, 0, 1, 0)
+					DetectorHandle.Text = ''
+					DetectorHandle.TextTransparency = 1
+
+					local ToggleLabel = Instance.new('TextLabel', ToggleStatic)
+					ToggleLabel.AutomaticSize = Enum.AutomaticSize.X
+					ToggleLabel.BackgroundTransparency = 1
+					ToggleLabel.Position = UDim2.new(0, 4, 0, 0)
+					ToggleLabel.Size = UDim2.new(0, 0, 1, 0)
+					ToggleLabel.Text = title
+					ToggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+					ToggleLabel.TextSize = 13
+					ToggleLabel.FontFace = Font.new('rbxasset://fonts/families/'..Library.Font..'.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+					ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+					local IsBusy = false
+
+					function ElementData.Activate(x)
+						if callback then
+							callback(x)
+						end
+					end
+
+					local ColorButton = Instance.new('ImageButton', ToggleStatic)
+					ColorButton.AnchorPoint = Vector2.new(1, 0.5)
+					ColorButton.BackgroundTransparency = 0
+					ColorButton.BackgroundColor3 = default
+					ColorButton.BorderSizePixel = 0
+					ColorButton.Position = UDim2.new(1, -4, 0.5, 0)
+					ColorButton.Size = UDim2.new(0, 20, 0, 10)
+					ColorButton.AutoButtonColor = false
+
+					ColorButton.MouseButton1Click:Connect(function()
+						IsBusy = true
+
+						Library:CallWindow('ColorBox', function(x)
+							if x then
+								ColorButton.BackgroundColor3 = x
+								ElementData.Activate(x)
+							end
+
+							IsBusy = false
+						end, title)
+					end)
+
+					return ElementData
+				end
+
+				return PageData
+			end
+
+			return SectionData
+		end
+	end
+
+	return Library
